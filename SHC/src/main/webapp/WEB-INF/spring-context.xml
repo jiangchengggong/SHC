@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+           http://www.springframework.org/schema/beans/spring-beans-3.2.xsd  
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd  
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd  
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+           http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	
+	<!-- 自动扫描以下包的类 -->
+	<!-- <mongo:mapping-converter base-package="com.mkfree.**.domain" /> -->
+	<context:property-placeholder location="classpath:mongodb.properties" />  
+
+	<context:annotation-config />
+    
+    <context:component-scan base-package="com.dream.shc" >
+		<context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+	</context:component-scan> 
+	
+	<!-- Default bean name is 'mongo' -->
+	<mongo:mongo id="mongo" host="${mongodb.host}" port="${mongodb.port}" />
+	
+	<mongo:db-factory id="dbFactory" dbname="${mongodb.databaseName}" mongo-ref="mongo" username="${mongodb.username}" password="${mongodb.password}" />
+	
+	<bean id="mappingContext" class="org.springframework.data.mongodb.core.mapping.MongoMappingContext" />
+	
+	<bean id="mappingMongoConverter" class="org.springframework.data.mongodb.core.convert.MappingMongoConverter">
+		<constructor-arg name="mongoDbFactory" ref="dbFactory" />
+		<constructor-arg name="mappingContext" ref="mappingContext" />
+		<property name="typeMapper" ref="defaultMongoTypeMapper" />
+	</bean>
+	<bean id="defaultMongoTypeMapper" class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
+		<constructor-arg name="typeKey">
+			<null />
+		</constructor-arg>
+	</bean>
+
+	
+	<!--mongodb data-->
+   <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+   
+		<!--<constructor-arg name="mongo" ref="mongo" />
+		<constructor-arg name="databaseName" value="${mongodb.databaseName}" />
+		<constructor-arg name="userCredentials" ref="userCredentials" /> -->
+		<constructor-arg name="mongoDbFactory" ref="dbFactory" /> 
+		<constructor-arg name="mongoConverter" ref="mappingMongoConverter" /> 
+	</bean>
+
+<!-- 	<bean id="mongo" class="org.springframework.data.mongodb.core.MongoFactoryBean">
+		<property name="host" value="${mongodb.host}" />
+		<property name="port" value="${mongodb.port}" />
+	</bean>
+
+ 	<bean id="userCredentials" class="org.springframework.data.authentication.UserCredentials">
+		<constructor-arg name="username" value="${mongodb.username}" />
+		<constructor-arg name="password" value="${mongodb.password}" />
+	</bean> -->
+	
+	
+	
+	<!--mongodb FS -->
+	<bean id="mongoTemplateFS" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongo" ref="mongoFS" />
+		<constructor-arg name="databaseName" value="${mongodb.gridfs.databaseName}" />
+		<constructor-arg name="userCredentials" ref="userCredentialsFS" />
+	</bean>
+
+	<bean id="mongoFS" class="org.springframework.data.mongodb.core.MongoFactoryBean">
+		<property name="host" value="${mongodb.gridfs.host}" />
+		<property name="port" value="${mongodb.gridfs.port}" />
+	</bean>
+
+	<bean id="userCredentialsFS" class="org.springframework.data.authentication.UserCredentials">
+		<constructor-arg name="username" value="${mongodb.gridfs.username}" />
+		<constructor-arg name="password" value="${mongodb.gridfs.password}" />
+	</bean>
+
+
+	<bean id="logger" class="org.slf4j.LoggerFactory" factory-method="getLogger">
+    	<constructor-arg type="java.lang.String" value="sample_log"></constructor-arg>
+    </bean>
+</beans> 

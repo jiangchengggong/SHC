@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:vld="http://www.springmodules.org/validation/bean/validator"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- Configures the @Controller programming model -->
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler/>
+	
+	<!-- Configures component-scan -->
+	<context:component-scan base-package="com.dream.shc" use-default-filters="false">
+		<context:include-filter expression="org.springframework.stereotype.Controller" type="annotation" />
+	</context:component-scan>
+
+	<!-- Configures Handler Interceptors -->
+<!-- 	<mvc:interceptors>
+		<bean class="com.sgm.epra.common.interceptor.ApplicationInitilizationInterceptor">
+			<property name="userService" ref="userService" />
+			<property name="rfqRoundBidderService" ref="rfqRoundBidderService" />
+			<property name="excludeResourceTypes">
+				<list>
+					<value>.js</value>
+					<value>.css</value>
+					<value>.jpg</value>
+					<value>.gif</value>
+					<value>.png</value>
+					<value>.bmp</value>
+					<value>.html</value>
+					<value>.swf</value>
+				</list>
+			</property>
+		</bean>
+	</mvc:interceptors> -->
+    <!-- <mvc:resources location="/img/" mapping="/img/**"/> -->
+	<!-- Saves a locale change using a session-->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+  		 <property name="defaultLocale" value="zh_CN"></property>
+ 	</bean>
+ 	<!-- 启动JSON格式的配置 -->
+<!--     <bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+        解决 HttpMediaTypeNotAcceptableException: Could not find acceptable representation
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/html;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean> -->
+	<!-- Resolves view names to protected .jsp resources within the /WEB-INF/jsp 
+		directory -->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- <beans:property name="prefix" value="/" /> -->
+		<beans:property name="prefix" value="/WEB-INF/jsp/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="20971520" />
+	</bean>
+	<!-- MaxUploadSizeExceededException -->
+<!-- 	<bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    <property name="exceptionMappings">
+   		<props>
+        <prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">/common/attachment/attachment_upload_error</prop>
+   		</props> 
+  	</property>
+ 	</bean> -->
+</beans> 
